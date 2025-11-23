@@ -1,0 +1,5 @@
+DATA_PATH = "../data/features.csv"
+TARGET_COLUMN = "target"
+MODEL_PATH = "model.pkl"
+DB_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/crypto"
+SYMBOL = "BTCUSDT"

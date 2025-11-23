@@ -1,0 +1,2 @@
+DB_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/crypto"
+SYMBOL = "BTCUSDT"
