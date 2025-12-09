@@ -1,4 +1,4 @@
--- Создание таблицы, если не существует
+-- Creating table if does not exist
 CREATE TABLE IF NOT EXISTS ohlcv (
     id SERIAL PRIMARY KEY,
     symbol TEXT NOT NULL,
@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS ohlcv (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Создание индексов для производительности
+-- Creating indexes to improve perfomance
 CREATE INDEX IF NOT EXISTS idx_ohlcv_symbol_time ON ohlcv(symbol, open_time);
 CREATE INDEX IF NOT EXISTS idx_ohlcv_time ON ohlcv(open_time);

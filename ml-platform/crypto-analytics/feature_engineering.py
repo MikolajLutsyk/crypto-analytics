@@ -112,10 +112,10 @@ def clean_data(df):
     return df
 
 def save_indicators_to_db(df, symbol="BTCUSDT"):
-    """Сохранение индикаторов обратно в БД для визуализации"""
+    """Saving indicators to bd again for visualization"""
     engine = create_engine(DB_URL)
     
-    print("💾 Saving indicators to database...")
+    print("... Saving indicators to database ...")
     
     for idx, row in df.iterrows():
         update_query = text("""
@@ -145,7 +145,7 @@ def save_indicators_to_db(df, symbol="BTCUSDT"):
         except Exception as e:
             continue
     
-    print("✅ Indicators saved to database")
+    print("SUCCESS -- Indicators saved to database")
 
 def add_features(df):
     df = add_technical_features(df)
@@ -156,15 +156,15 @@ def add_features(df):
     return df
 
 def run_etl():
-    print("📥 Loading data...")
+    print("1. Loading data...")
     df = load_raw_data()
-    print("⚙️ Building features...")
+    print("2. Building features...")
     df = add_features(df)
-    print("💾 Saving to CSV...")
+    print("3. Saving to CSV...")
     df.to_csv("data/features.csv")
-    print("💾 Saving indicators to DB...")
+    print("4. Saving indicators to DB...")
     save_indicators_to_db(df)
-    print("✅ Done:", df.shape)
+    print("5. Done:", df.shape)
 
 if __name__ == "__main__":
     run_etl()

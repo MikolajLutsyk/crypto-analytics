@@ -14,7 +14,6 @@ import {
 const PriceChart = ({ data }) => {
   if (!data) return <div className="loading">Loading chart data...</div>;
 
-  // Подготавливаем данные для графика
   const chartData = data.timestamps.map((timestamp, index) => ({
     timestamp: new Date(timestamp).toLocaleDateString(),
     time: new Date(timestamp),
@@ -36,7 +35,7 @@ const PriceChart = ({ data }) => {
 
   return (
     <div className="chart-container">
-      <h3>📈 Price Chart with Moving Averages</h3>
+      <h3>Price Chart with Moving Averages</h3>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />

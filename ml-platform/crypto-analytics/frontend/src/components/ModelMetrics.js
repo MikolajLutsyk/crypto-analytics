@@ -22,7 +22,7 @@ const ModelMetrics = ({ metrics, prediction }) => {
 
   return (
     <div className="metrics-container">
-      <h3>🤖 Model Performance</h3>
+      <h3>Model Performance</h3>
       
       {/* Performance Summary */}
       <div className="performance-summary" style={{ borderLeftColor: performance.color }}>
@@ -43,7 +43,7 @@ const ModelMetrics = ({ metrics, prediction }) => {
       {/* Current Prediction */}
       {prediction && (
         <div className="prediction-card">
-          <h4>🎯 Current Prediction</h4>
+          <h4>Current Prediction</h4>
           <div className="prediction-details">
             <div className="prediction-item">
               <span>Direction:</span>

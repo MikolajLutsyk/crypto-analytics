@@ -10,7 +10,7 @@ from ml_service import ml_service
 
 app = FastAPI(
     title="Crypto Analytics API",
-    description="API для визуализации крипто-данных и ML моделей",
+    description="API for visualization of crypto data and ML model",
     version="1.0.0"
 )
 
@@ -32,12 +32,12 @@ async def get_ohlcv(symbol: str = "BTCUSDT", days: int = 90):
     try:
         df = await get_ohlcv_data(symbol, days)
         
-        # Основные данные
+        # Main data
         timestamps = df['open_time'].tolist()
         prices = df['close'].tolist()
         volume = df['volume'].tolist()
         
-        # Индикаторы
+        # Indicators
         indicators = {
             "sma_7": df['sma_7'].fillna(0).tolist(),
             "sma_25": df['sma_25'].fillna(0).tolist(),
@@ -81,17 +81,29 @@ async def get_model_metrics():
 
 @app.get("/api/predict/current", response_model=Prediction)
 async def get_current_prediction():
+    print("=== /api/predict/current ЗАПУЩЕН ===")
     try:
+        print("1. Загружаю features...")
         df = await get_features_data()
+        print(f"2. Features загружены: {df is not None}")
+        
         if df is None:
+            print("❌ Features data not found")
             raise HTTPException(status_code=404, detail="Features data not found")
         
+        print("3. Вызываю ml_service.predict_current...")
         prediction = ml_service.predict_current(df)
+        
         if prediction is None:
+            print("❌ Model not trained or error in prediction")
             raise HTTPException(status_code=404, detail="Model not trained")
         
+        print("4. Возвращаю результат...")
         return Prediction(**prediction)
     except Exception as e:
+        print(f"🔥 ОШИБКА в эндпоинте: {e}")
+        import traceback
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/technical/indicators")

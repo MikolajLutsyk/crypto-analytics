@@ -25,7 +25,7 @@ const TechnicalIndicators = ({ data }) => {
 
   return (
     <div className="technical-container">
-      <h3>📊 Technical Indicators</h3>
+      <h3>Technical Indicators</h3>
       
       <div className="indicators-grid">
         {/* RSI Indicator */}

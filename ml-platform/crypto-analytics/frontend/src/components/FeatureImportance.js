@@ -23,7 +23,7 @@ const FeatureImportance = ({ features }) => {
 
   return (
     <div className="chart-container">
-      <h3>🎯 Feature Importance (CatBoost Model)</h3>
+      <h3>Feature Importance (CatBoost Model)</h3>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={sortedFeatures}

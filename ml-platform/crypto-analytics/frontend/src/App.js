@@ -63,7 +63,7 @@ function App() {
     return (
       <div className="App">
         <div className="error-container">
-          <h2>🚨 Error</h2>
+          <h2>Error</h2>
           <p>{error}</p>
           <button onClick={handleRefresh}>Retry</button>
         </div>
@@ -75,7 +75,7 @@ function App() {
     <div className="App">
       <header className="app-header">
         <div className="header-content">
-          <h1>🚀 Crypto Analytics Dashboard</h1>
+          <h1>Crypto Analytics Dashboard</h1>
           <p>Real-time cryptocurrency analysis with machine learning predictions</p>
         </div>
         <div className="controls">
@@ -91,7 +91,7 @@ function App() {
             </select>
           </div>
           <button onClick={handleRefresh} className="refresh-btn">
-            🔄 Refresh Data
+            Refresh Data
           </button>
         </div>
       </header>
@@ -122,7 +122,7 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          📊 Crypto Analytics Dashboard | 
+          Crypto Analytics Dashboard | 
           Data from Binance API | 
           ML Model: CatBoost | 
           Built with FastAPI & React

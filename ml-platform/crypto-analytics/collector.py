@@ -5,15 +5,15 @@ from datetime import datetime, timedelta
 import time
 from config import DB_URL, SYMBOL, INTERVAL
 
-# === Настройки подключения к TimescaleDB ===
+# === Settings for connection to TimescaleDB ===
 engine = create_engine(DB_URL)
 
-# === Параметры ===
+# === Parameters ===
 DAYS = 180
-LIMIT = 1000  # максимум Binance API
+LIMIT = 1000  # Binance API maximum
 
 def create_table_if_not_exists():
-    """Создание таблицы если не существует"""
+    """Creating table if it doesn't exist"""
     create_table_query = """
     CREATE TABLE IF NOT EXISTS ohlcv (
         id SERIAL PRIMARY KEY,
@@ -42,9 +42,9 @@ def create_table_if_not_exists():
         with engine.connect() as conn:
             conn.execute(text(create_table_query))
             conn.commit()
-        print("✅ Таблица ohlcv создана или уже существует")
+        print("SUCCESS -- ohlcv создана is created or already existed")
     except Exception as e:
-        print(f"❌ Ошибка создания таблицы: {e}")
+        print(f"EXCEPTION -- error while creating a table {e}")
 
 def fetch_klines(symbol, interval, start_date, end_date):
     url = "https://api.binance.com/api/v3/klines"
@@ -71,11 +71,11 @@ def fetch_klines(symbol, interval, start_date, end_date):
             print(f"📦 Loaded {len(data)} candles, next: {datetime.fromtimestamp(start_ts/1000)}")
             time.sleep(0.2)  # Rate limiting
         except Exception as e:
-            print(f"❌ Error fetching data: {e}")
+            print(f"FAILURE -- Error fetching data: {e}")
             break
 
     if not all_data:
-        print("❌ No data fetched")
+        print("!!! No data fetched")
         return pd.DataFrame()
 
     df = pd.DataFrame(all_data, columns=[
@@ -84,7 +84,7 @@ def fetch_klines(symbol, interval, start_date, end_date):
         "taker_buy_base_volume", "taker_buy_quote_volume", "ignore"
     ])
 
-    # Преобразование типов
+    # Changing types
     df["open_time"] = pd.to_datetime(df["open_time"], unit="ms")
     df["close_time"] = pd.to_datetime(df["close_time"], unit="ms")
     numeric_cols = ["open", "high", "low", "close", "volume",
@@ -97,10 +97,10 @@ def fetch_klines(symbol, interval, start_date, end_date):
 
 def save_to_db(df):
     if df.empty:
-        print("⚠️ No data to save.")
+        print(" !!! No data to save.")
         return
     
-    # Проверяем существующие данные
+    # Verifying existing data
     existing_query = text("""
         SELECT MAX(open_time) as last_time FROM ohlcv WHERE symbol = :symbol
     """)
@@ -110,12 +110,12 @@ def save_to_db(df):
         last_time = result.scalar()
     
     if last_time:
-        # Фильтруем только новые данные
+        # Filtering only new data
         df = df[df['open_time'] > last_time]
         print(f"🔄 Found {len(df)} new records to insert")
     
     if df.empty:
-        print("✅ No new data to insert")
+        print("!!! No new data to insert")
         return
 
     df_to_insert = df[[
@@ -126,21 +126,21 @@ def save_to_db(df):
     
     try:
         df_to_insert.to_sql("ohlcv", engine, if_exists="append", index=False)
-        print(f"✅ Saved {len(df_to_insert)} rows to TimescaleDB")
+        print(f"SUCCESS -- Saved {len(df_to_insert)} rows to TimescaleDB")
     except Exception as e:
-        print(f"❌ Error saving to DB: {e}")
+        print(f"EXCEPTION -- Error saving to DB: {e}")
 
 if __name__ == "__main__":
-    print("🚀 Starting data collection...")
+    print("            Starting data collection...")
     create_table_if_not_exists()
     
     end = datetime.utcnow()
     start = end - timedelta(days=DAYS)
-    print(f"📡 Fetching {SYMBOL} {INTERVAL} data for last {DAYS} days...")
+    print(f"Fetching {SYMBOL} {INTERVAL} data for last {DAYS} days...")
     
     df = fetch_klines(SYMBOL, INTERVAL, start, end)
     if not df.empty:
-        print(f"✅ Fetched {len(df)} rows: {df['open_time'].min()} → {df['open_time'].max()}")
+        print(f"SUCCESS -- Fetched {len(df)} rows: {df['open_time'].min()} → {df['open_time'].max()}")
         save_to_db(df)
     else:
-        print("❌ No data fetched")
+        print("FAIL -- No data fetched")

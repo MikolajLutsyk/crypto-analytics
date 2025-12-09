@@ -12,43 +12,74 @@ class MLService:
         self.load_model()
     
     def load_model(self):
-        """Загрузка обученной модели"""
+        """Loading trained model"""
         try:
-            if os.path.exists("../improved_catboost_model.pkl"):
-                model_data = joblib.load("../improved_catboost_model.pkl")
-                self.model = model_data["model"]
-                self.features = model_data["features"]
-                self.feature_importance = model_data["feature_importance"]
-                print("✅ ML модель загружена")
-            else:
-                print("❌ Модель не найдена, запустите train_model.py")
+            possible_paths = [
+                "catboost_model.pkl",
+                "./catboost_model.pkl",
+                "../catboost_model.pkl",
+                "../../catboost_model.pkl"
+            ]
+            
+            loaded = False
+            for model_path in possible_paths:
+                if os.path.exists(model_path):
+                    print(f"✅ Найдена модель: {model_path}")
+                    model_data = joblib.load(model_path)
+                    self.model = model_data["model"]
+                    self.features = model_data["features"]
+                    
+                    if "feature_importance" in model_data:
+                        self.feature_importance = pd.DataFrame(model_data["feature_importance"])
+                    elif "feature_names" in model_data:
+                        self.feature_importance = pd.DataFrame({
+                            'feature': model_data["feature_names"],
+                            'importance': model_data["importance_values"]
+                        })
+                    else:
+                        print("⚠️  feature_importance сохранен в неизвестном формате")
+                        self.feature_importance = pd.DataFrame()
+                    
+                    loaded = True
+                    print("SUCCESS -- ML model loaded")
+                    print(f"📊 Количество признаков: {len(self.features)}")
+                    if not self.feature_importance.empty:
+                        print(f"📊 Важность признаков загружена: {len(self.feature_importance)} строк")
+                    break
+            
+            if not loaded:
+                print("FAILURE -- model not found in any path, run train_model.py first")
+                print("📂 Искал по путям:", possible_paths)
+                
         except Exception as e:
-            print(f"❌ Ошибка загрузки модели: {e}")
+            print(f"ECXEPTION -- failed to load model: {e}")
+            import traceback
+            print(traceback.format_exc())
     
     def get_feature_importance(self, top_n: int = 20):
-        """Получение важности фичей"""
+        """Getting feature importance"""
         if self.feature_importance is not None:
             return self.feature_importance.head(top_n).to_dict('records')
         return []
     
     def get_model_metrics(self, df):
-        """Расчет метрик модели на последних данных"""
+        """Determining metrics based on latest data"""
         if self.model is None or self.features is None:
             return None
         
-        # Подготовка данных для предсказания
+        # Getting data ready for prediction
         X = df[self.features].fillna(0)
         y = df['target_direction']
         
-        # Временной сплит
+        # Time split
         split_idx = int(len(df) * 0.8)
         X_test = X.iloc[split_idx:]
         y_test = y.iloc[split_idx:]
         
-        # Предсказания
+        # Prediction
         y_pred = self.model.predict(X_test)
         
-        # Метрики
+        # Metrics
         from sklearn.metrics import accuracy_score, balanced_accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
         
         accuracy = accuracy_score(y_test, y_pred)
@@ -68,28 +99,42 @@ class MLService:
         }
     
     def predict_current(self, df):
-        """Предсказание для последней доступной точки"""
+        """Prediction for latest available point"""
+        print(f"\n🔥 ===== PREDICT_CURRENT STARTED =====")
+        
         if self.model is None or self.features is None:
+            print("❌ Модель или признаки не загружены")
             return None
         
-        # Берем последнюю точку
-        latest = df.iloc[-1]
-        X_latest = latest[self.features].fillna(0).values.reshape(1, -1)
+        missing = [f for f in self.features if f not in df.columns]
+        if missing:
+            print(f"❌ Отсутствуют признаки: {missing[:5]}...")
+            return None
         
-        # Предсказание
-        prediction = self.model.predict(X_latest)[0]
-        probability = self.model.predict_proba(X_latest)[0]
-        confidence = max(probability)
-        
-        direction = "UP" if prediction == 1 else "DOWN"
-        current_price = latest['close']
-        
-        return {
-            "current_price": current_price,
-            "predicted_direction": direction,
-            "confidence": confidence,
-            "top_features": self.get_feature_importance(10)
-        }
+        try:
+            latest = df.iloc[-1]
+            
+            X_latest_df = pd.DataFrame([latest[self.features]])
+            
+            X_latest_df = X_latest_df.fillna(0)
+            
+            prediction = self.model.predict(X_latest_df)[0]
+            probability = self.model.predict_proba(X_latest_df)[0]
+            confidence = max(probability)
+            
+            print(f"✅ Прогноз: {prediction}, уверенность: {confidence}")
+            
+            return {
+                "current_price": float(latest['close']),
+                "predicted_direction": "UP" if prediction == 1 else "DOWN",
+                "confidence": float(confidence),
+                "top_features": self.get_feature_importance(10)
+            }
+        except Exception as e:
+            print(f"🔥 КРИТИЧЕСКАЯ ОШИБКА в predict_current: {e}")
+            import traceback
+            print(traceback.format_exc())
+            return None
 
-# Глобальный экземпляр
+# Global object
 ml_service = MLService()
