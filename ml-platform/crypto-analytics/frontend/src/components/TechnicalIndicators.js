@@ -4,7 +4,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const TechnicalIndicators = ({ data }) => {
   if (!data) return <div className="loading">Loading technical indicators...</div>;
 
-  // Подготавливаем данные для RSI графика
   const rsiData = data.timestamps.map((timestamp, index) => ({
     timestamp: new Date(timestamp).toLocaleDateString(),
     rsi: data.indicators.rsi_14[index],
@@ -12,7 +11,6 @@ const TechnicalIndicators = ({ data }) => {
     oversold: 30
   }));
 
-  // Подготавливаем данные для MACD графика
   const macdData = data.timestamps.map((timestamp, index) => ({
     timestamp: new Date(timestamp).toLocaleDateString(),
     macd: data.indicators.macd[index],

@@ -57,7 +57,6 @@ const PriceChart = ({ data }) => {
           />
           <Legend />
           
-          {/* Основная линия цены */}
           <Line 
             yAxisId="left"
             type="monotone" 

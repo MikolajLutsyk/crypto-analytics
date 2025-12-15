@@ -17,7 +17,7 @@ async def get_ohlcv_data(symbol: str = "BTCUSDT", days: int = 180):
     return df
 
 async def get_features_data():
-    """Загрузка данных из features.csv для ML"""
+    """Loading data from features.csv for ML"""
     try:
         df = pd.read_csv("../data/features.csv", index_col="open_time", parse_dates=True)
         return df

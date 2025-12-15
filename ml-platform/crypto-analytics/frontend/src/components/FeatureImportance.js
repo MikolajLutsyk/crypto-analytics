@@ -14,7 +14,6 @@ const FeatureImportance = ({ features }) => {
     return <div className="loading">Loading feature importance data...</div>;
   }
 
-  // Сортируем фичи по важности
   const sortedFeatures = [...features].sort((a, b) => b.importance - a.importance);
 
   const formatTooltip = (value) => {

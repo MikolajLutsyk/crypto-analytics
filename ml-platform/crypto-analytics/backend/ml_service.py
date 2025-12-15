@@ -37,19 +37,18 @@ class MLService:
                             'importance': model_data["importance_values"]
                         })
                     else:
-                        print("⚠️  feature_importance сохранен в неизвестном формате")
+                        print("⚠️  feature_importance was saved in an unknown format")
                         self.feature_importance = pd.DataFrame()
                     
                     loaded = True
                     print("SUCCESS -- ML model loaded")
                     print(f"📊 Количество признаков: {len(self.features)}")
                     if not self.feature_importance.empty:
-                        print(f"📊 Важность признаков загружена: {len(self.feature_importance)} строк")
+                        print(f"📊 Feature importance loaded: {len(self.feature_importance)} lines")
                     break
             
             if not loaded:
                 print("FAILURE -- model not found in any path, run train_model.py first")
-                print("📂 Искал по путям:", possible_paths)
                 
         except Exception as e:
             print(f"ECXEPTION -- failed to load model: {e}")
@@ -103,12 +102,12 @@ class MLService:
         print(f"\n🔥 ===== PREDICT_CURRENT STARTED =====")
         
         if self.model is None or self.features is None:
-            print("❌ Модель или признаки не загружены")
+            print("❌ Model or features not loaded")
             return None
         
         missing = [f for f in self.features if f not in df.columns]
         if missing:
-            print(f"❌ Отсутствуют признаки: {missing[:5]}...")
+            print(f"❌ Features missing: {missing[:5]}...")
             return None
         
         try:
@@ -122,7 +121,7 @@ class MLService:
             probability = self.model.predict_proba(X_latest_df)[0]
             confidence = max(probability)
             
-            print(f"✅ Прогноз: {prediction}, уверенность: {confidence}")
+            print(f"✅ Prediction: {prediction}, confidence: {confidence}")
             
             return {
                 "current_price": float(latest['close']),
@@ -131,7 +130,7 @@ class MLService:
                 "top_features": self.get_feature_importance(10)
             }
         except Exception as e:
-            print(f"🔥 КРИТИЧЕСКАЯ ОШИБКА в predict_current: {e}")
+            print(f"🔥 Critical error in predict_current: {e}")
             import traceback
             print(traceback.format_exc())
             return None

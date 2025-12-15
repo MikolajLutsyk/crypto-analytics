@@ -11,17 +11,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def load_feature_data():
-    """Загрузка данных из features.csv"""
+    """Load data from features.csv"""
     try:
         df = pd.read_csv("data/features.csv", index_col="open_time", parse_dates=True)
-        print(f"✅ Загружено {len(df)} строк из data/features.csv")
+        print(f"✅ Loaded {len(df)} rows from data/features.csv")
         return df
     except FileNotFoundError:
-        print("❌ Файл data/features.csv не найден. Сначала запустите feature_engineering.py")
+        print("❌ File data/features.csv not found. Run feature_engineering.py first")
         return None
 
 def prepare_feature_data(df):
-    """Подготовка данных для обучения"""
+    """Prepare data for training"""
     exclude_cols = ['close_future', 'future_return', 'target_direction', 'target_3class']
     
     numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -30,20 +30,20 @@ def prepare_feature_data(df):
     X = df[feature_cols].fillna(0)
     y = df['target_direction']
     
-    print(f"📊 Используется {len(feature_cols)} признаков")
+    print(f"📊 Using {len(feature_cols)} features")
     return X, y, feature_cols
 
 def select_best_features(X, y, k=30):
-    """Выбор лучших признаков"""
+    """Select best features"""
     selector = SelectKBest(f_classif, k=min(k, X.shape[1]))
     selector.fit(X, y)
     selected_features = X.columns[selector.get_support()].tolist()
     
-    print(f"🎯 Выбрано {len(selected_features)} лучших признаков")
+    print(f"🎯 Selected {len(selected_features)} best features")
     return selected_features
 
 def create_time_based_split(df, test_size=0.2):
-    """Создание временного сплита (важно для временных рядов)"""
+    """Create time-based split (important for time series)"""
     split_idx = int(len(df) * (1 - test_size))
     train_mask = df.index <= df.index[split_idx]
     test_mask = df.index > df.index[split_idx]
@@ -51,7 +51,7 @@ def create_time_based_split(df, test_size=0.2):
     return train_mask, test_mask
 
 def prepare_categorical_features(selected_features):
-    """Подготовка категориальных признаков"""
+    """Prepare categorical features"""
     cat_features_indices = []
     cat_features_names = []
     
@@ -62,12 +62,12 @@ def prepare_categorical_features(selected_features):
             cat_features_indices.append(i)
             cat_features_names.append(col)
     
-    print(f"🏷️ Категориальные признаки ({len(cat_features_indices)}): {cat_features_names}")
+    print(f"🏷️ Categorical features ({len(cat_features_indices)}): {cat_features_names}")
     return cat_features_indices
 
 def train_model(X, y, selected_features):
-    """Обучение модели CatBoost с балансировкой классов"""
-    # Временной сплит
+    """Train CatBoost model with class balancing"""
+    # Time-based split
     train_mask, test_mask = create_time_based_split(X)
     
     X_train = X[selected_features].loc[train_mask]
@@ -75,15 +75,15 @@ def train_model(X, y, selected_features):
     y_train = y.loc[train_mask]
     y_test = y.loc[test_mask]
     
-    print(f"📈 Размер обучающей выборки: {len(X_train)}")
-    print(f"📊 Размер тестовой выборки: {len(X_test)}")
-    print(f"📊 Баланс классов в обучающей выборке:")
+    print(f"📈 Training set size: {len(X_train)}")
+    print(f"📊 Test set size: {len(X_test)}")
+    print(f"📊 Class balance in training set:")
     print(y_train.value_counts().sort_index())
     
-    # Получаем индексы категориальных признаков
+    # Get categorical feature indices
     cat_features_indices = prepare_categorical_features(selected_features)
     
-    # Обучение модели БЕЗ SMOTE, только с auto_class_weights
+    # Train model WITHOUT SMOTE, using auto_class_weights only
     model = CatBoostClassifier(
         iterations=1000,
         learning_rate=0.05,
@@ -97,10 +97,10 @@ def train_model(X, y, selected_features):
         eval_metric='Accuracy',
         random_seed=42,
         verbose=100,
-        auto_class_weights='Balanced'  # Балансировка через веса классов
+        auto_class_weights='Balanced'
     )
     
-    # Обучение на исходных данных (без SMOTE)
+    # Train on original data (no SMOTE)
     model.fit(
         X_train, y_train,
         eval_set=(X_test, y_test),
@@ -108,7 +108,7 @@ def train_model(X, y, selected_features):
         use_best_model=True
     )
     
-    # Предсказания и метрики
+    # Predictions and metrics
     y_pred = model.predict(X_test)
     
     accuracy = accuracy_score(y_test, y_pred)
@@ -117,8 +117,8 @@ def train_model(X, y, selected_features):
     recall = recall_score(y_test, y_pred, average='weighted')
     f1 = f1_score(y_test, y_pred, average='weighted')
     
-    print(f"\n🎯 Точность (Accuracy): {accuracy:.3f}")
-    print(f"⚖️  Сбалансированная точность: {balanced_acc:.3f}")
+    print(f"\n🎯 Accuracy: {accuracy:.3f}")
+    print(f"⚖️  Balanced Accuracy: {balanced_acc:.3f}")
     print(f"📊 Precision: {precision:.3f}")
     print(f"📊 Recall: {recall:.3f}")
     print(f"📊 F1-score: {f1:.3f}")
@@ -129,9 +129,9 @@ def train_model(X, y, selected_features):
     # Confusion Matrix
     plt.figure(figsize=(8, 6))
     cm = confusion_matrix(y_test, y_pred)
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", 
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
                 xticklabels=["DOWN", "UP"], yticklabels=["DOWN", "UP"])
-    plt.title("Confusion Matrix CatBoost")
+    plt.title("CatBoost Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     plt.tight_layout()
@@ -155,13 +155,11 @@ def train_model(X, y, selected_features):
     return model, accuracy, X_test, y_test, y_pred, feature_importance_df
 
 def save_model(model, features, accuracy, feature_importance):
-    """Сохранение модели и метаданных"""
-    # Конвертируем feature_importance в словарь для сохранения
+    """Save model and metadata"""
     model_data = {
         "model": model,
         "features": features,
         "accuracy": accuracy,
-        # Сохраняем как список словарей, а не DataFrame
         "feature_importance": feature_importance.to_dict('records'),
         "timestamp": pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
     }
@@ -169,42 +167,42 @@ def save_model(model, features, accuracy, feature_importance):
     with open("catboost_model.pkl", "wb") as f:
         pickle.dump(model_data, f)
     
-    print("💾 Модель сохранена → catboost_model.pkl")
+    print("💾 Model saved → catboost_model.pkl")
 
 def run_pipeline():
-    """Основной пайплайн обучения"""
-    print("🚀 Запуск пайплайна обучения CatBoost...")
+    """Main training pipeline"""
+    print("🚀 Starting CatBoost training pipeline...")
     
-    # 1. Загрузка данных
+    # 1. Load data
     df = load_feature_data()
     if df is None:
         return
     
-    # 2. Подготовка данных
+    # 2. Prepare data
     X, y, all_features = prepare_feature_data(df)
     
-    # 3. Выбор признаков
+    # 3. Feature selection
     selected_features = select_best_features(X, y, k=40)
     
-    # 4. Обучение модели
+    # 4. Train model
     model, accuracy, X_test, y_test, y_pred, feature_importance = train_model(X, y, selected_features)
     
-    # 5. Сохранение модели
+    # 5. Save model
     save_model(model, selected_features, accuracy, feature_importance)
     
-    # 6. Оценка результатов
+    # 6. Evaluate results
     if accuracy >= 0.6:
-        print(f"🎉 Отличный результат! Точность: {accuracy:.2%}")
-        print("✅ Модель достигла целевой точности 60%+")
+        print(f"🎉 Excellent result! Accuracy: {accuracy:.2%}")
+        print("✅ Model reached target accuracy of 60%+")
     elif accuracy >= 0.55:
-        print(f"⚠️  Приемлемый результат: {accuracy:.2%}")
-        print("ℹ️  Можно попробовать улучшить через настройку гиперпараметров")
+        print(f"⚠️  Acceptable result: {accuracy:.2%}")
+        print("ℹ️  You can try improving it via hyperparameter tuning")
     else:
-        print(f"❌ Низкая точность: {accuracy:.2%}")
-        print("💡 Рекомендации: попробуйте увеличить объем данных или добавить дополнительные признаки")
+        print(f"❌ Low accuracy: {accuracy:.2%}")
+        print("💡 Recommendation: increase dataset size or add more features")
     
-    # Вывод топ-10 признаков
-    print("\n🏆 Топ-10 самых важных признаков:")
+    # Print top-10 features
+    print("\n🏆 Top-10 most important features:")
     for i, row in feature_importance.head(10).iterrows():
         print(f"  {i+1:2d}. {row['feature']}: {row['importance']:.4f}")
 

@@ -17,7 +17,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,7 +83,7 @@ async def get_model_metrics():
 async def get_current_prediction():
     print("=== /api/predict/current ЗАПУЩЕН ===")
     try:
-        print("1. Загружаю features...")
+        print("1. Loading features...")
         df = await get_features_data()
         print(f"2. Features загружены: {df is not None}")
         
@@ -91,17 +91,17 @@ async def get_current_prediction():
             print("❌ Features data not found")
             raise HTTPException(status_code=404, detail="Features data not found")
         
-        print("3. Вызываю ml_service.predict_current...")
+        print("3. Calling ml_service.predict_current...")
         prediction = ml_service.predict_current(df)
         
         if prediction is None:
             print("❌ Model not trained or error in prediction")
             raise HTTPException(status_code=404, detail="Model not trained")
         
-        print("4. Возвращаю результат...")
+        print("4. Returning result...")
         return Prediction(**prediction)
     except Exception as e:
-        print(f"🔥 ОШИБКА в эндпоинте: {e}")
+        print(f"Error in an endpoint: {e}")
         import traceback
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
