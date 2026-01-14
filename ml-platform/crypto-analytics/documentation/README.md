@@ -1,5 +1,5 @@
 crypto-analytics/
-├── 📊 BACKEND & DATA
+├── BACKEND & DATA
 │   ├── collector.py                 
 │   ├── feature_engineering.py       
 │   ├── train_model.py              
@@ -7,14 +7,14 @@ crypto-analytics/
 │   ├── improved_catboost_model.pkl  
 │   └── requirements.txt            
 │
-├── 🌐 FASTAPI BACKEND
+├── FASTAPI BACKEND
 │   ├── main.py                     
 │   ├── database.py                 
 │   ├── models.py                   
 │   ├── ml_service.py               
 │   └── requirements.txt            
 │
-├── ⚛️ REACT FRONTEND
+├── REACT FRONTEND
 │   ├── public/
 │   │   ├── index.html
 │   │   └── favicon.ico
@@ -32,21 +32,21 @@ crypto-analytics/
 │   ├── package.json               
 │   └── package-lock.json           
 │
-├── 🗄️ DATABASE & DATA
+├── DATABASE & DATA
 │   ├── docker-compose.yml         
 │   ├── init.sql                    
 │   ├── data/                      
 │   │   └── features.csv            
 │   └── backups/                    
 │
-└── 📝 Documentation
+└── Documentation
     ├── README.md                  
     └── run_instructions.md         
 
 
 
 
-# 🚀 Crypto Analytics Dashboard
+# Crypto Analytics Dashboard
 
 Fully functioning platform for crypto analysis with ML and visualization in real time
 

@@ -3,6 +3,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+bun.lockb
 
 # Локальные файлы окружения
 .env
@@ -12,22 +13,23 @@ yarn-error.log*
 .env.production.local
 
 # Логи
-logs
+logs/
 *.log
 
 # Кэш
 .npm
 .eslintcache
+.parcel-cache
+.next/
+.nuxt/
+.cache/
+.fusebox/
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-.nyc_output
 
 # Dependency directories
 node_modules/
@@ -58,24 +60,11 @@ jspm_packages/
 .env
 .env.test
 
-# parcel-bundler cache (https://parceljs.org/)
+# parcel-bundler cache
 .cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
 
 # Serverless directories
 .serverless/
-
-# FuseBox cache
-.fusebox/
 
 # DynamoDB Local files
 .dynamodb/
@@ -83,12 +72,11 @@ jspm_packages/
 # TernJS port file
 .tern-port
 
-
-data/
-*.csv
+# Данные (кроме примеров)
+data/*.csv
+!data/features_sample.csv  # сохранить только образец
 *.pkl
 *.model
-
 
 # Python
 __pycache__/
@@ -111,6 +99,353 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # CatBoost
 catboost_info/
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+.jupyter/
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Операционные системы
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Конфигурации локального окружения
+local_settings.py
+settings.ini
+config.ini
+config.yaml
+config.yml
+
+# Бинарные файлы
+*.pyc
+*.pyd
+*.pyo
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Логи и дампы
+*.log
+*.dump
+*.rdb
+*.sqlite3
+*.sqlite
+
+# Миграции баз данных (если используете)
+migrations/
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.override.yml
+
+# Временные директории
+tmp/
+temp/
+*.tmp
+*.temp
+scratch/
+
+# Архивы
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+*.tar.gz
+
+# Бэкапы
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+
+# Модели машинного обучения
+improved_catboost_model.pkl  # промежуточные модели
+catboost_model.pkl  # временные модели
+*.joblib
+*.h5
+*.hdf5
+*.onnx
+*.pb
+
+# Временные файлы виртуального окружения
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+venv*/
+pyvenv.cfg
+
+# Пакеты Python
+pip-wheel-metadata/
+share/python-wheels/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Файлы pytype
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Временные файлы FastAPI
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Реакт/Фронтенд
+build/
+dist/
+.tmp/
+public/build/
+src/.umi/
+src/.umi-production/
+storybook-static/
+
+# Пакетные менеджеры
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Файлы метрик и отчетов
+lighthouse-report.html
+lighthouse-report.json
+webpack-stats.json
+*.prof.html
+
+# Файлы проекта
+.project
+.classpath
+.settings/
+.factorypath
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Visual Studio
+.vs/
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# JetBrains
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+.DS_Store
+
+# Windows
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# Файлы для разработки (не для продакшена)
+.devcontainer/
+.codesandbox/
+.gitpod.yml
+
+# Прогресс сборки
+.st-build/
+.cr/
+.pnp.*
+
+# Бинарные файлы для продакшена (если они генерируются)
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.test
+*.out
+
+# Файлы специфичные для пользователя
+*_flymake.py
+*_flymake.php
+*_flymake.js
+*.sublime-workspace
+
+# Файлы специфичные для проекта
+.project
+.classpath
+.pydevproject
+
+# Файлы системных служб
+*.service
+*.socket
+
+# Файлы конфигурации систем
+/etc/
+
+# Документация, которая генерируется
+docs/_build/
+site/
+
+# Файлы для разработки на C/C++
+*.slo
+*.lo
+*.o
+*.obj
+
+# Файлы для разработки на Java
+*.class
+
+# Файлы для разработки на Ruby
+*.gem
+.bundle/
+
+# Файлы для разработки на PHP
+vendor/
+composer.lock
+
+# Файлы для разработки на Go
+vendor/
+*.test
+*.out
+
+# Файлы для разработки на Rust
+/target/
+**/*.rs.bk
+
+# Файлы для разработки на C#
+*.csproj.user
+*.cache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Файлы для разработки на Unity
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# Файлы для разработки на Unreal Engine
+Saved/
+Intermediate/
+Binaries/
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# Файлы для разработки на Godot
+.godot/
+
+# Файлы для разработки на Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Файлы специфичные для вашего проекта
+# Сохранить только примеры данных и конфиги
+!data/features_sample.csv
+!config.example.py
+!requirements.example.txt
+
+# ФАЙЛЫ ПАЙТЕСТ КЕШ И ВСЕ СВЯЗАННОЕ С ТЕСТАМИ - НЕ НУЖНЫ
+.pytest_cache/
+.pytest_cache/*
+*.pytest_cache
+.coverage
+.coverage.*
+htmlcov/
+.nyc_output
+*.cover
+.hypothesis/
+.hypothesis/*
+test-results/
+test-reports/
+*.xml
+*.trx
+__pycache__/test*
+*.pytest_cache*
+.pytest_cache/
+.coverage
+htmlcov/
+.pytest_cache/
+.coverage.*
+*.cover
+.hypothesis/
+test-results/
+test-reports/
+*.xml
+*.trx
+*.pytest_cache
+.pytest_cache
+.pytest_cache/
