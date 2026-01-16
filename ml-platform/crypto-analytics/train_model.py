@@ -14,14 +14,13 @@ def load_feature_data():
     """Load data from features.csv"""
     try:
         df = pd.read_csv("data/features.csv", index_col="open_time", parse_dates=True)
-        print(f"✅ Loaded {len(df)} rows from data/features.csv")
+        print(f"Loaded {len(df)} rows from data/features.csv")
         return df
     except FileNotFoundError:
-        print("❌ File data/features.csv not found. Run feature_engineering.py first")
+        print("File data/features.csv not found. Run feature_engineering.py first")
         return None
 
 def prepare_feature_data(df):
-    """Prepare data for training"""
     exclude_cols = ['close_future', 'future_return', 'target_direction', 'target_3class']
     
     numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -30,20 +29,18 @@ def prepare_feature_data(df):
     X = df[feature_cols].fillna(0)
     y = df['target_direction']
     
-    print(f"📊 Using {len(feature_cols)} features")
+    print(f"Using {len(feature_cols)} features")
     return X, y, feature_cols
 
 def select_best_features(X, y, k=30):
-    """Select best features"""
     selector = SelectKBest(f_classif, k=min(k, X.shape[1]))
     selector.fit(X, y)
     selected_features = X.columns[selector.get_support()].tolist()
     
-    print(f"🎯 Selected {len(selected_features)} best features")
+    print(f"Selected {len(selected_features)} best features")
     return selected_features
 
 def create_time_based_split(df, test_size=0.2):
-    """Create time-based split (important for time series)"""
     split_idx = int(len(df) * (1 - test_size))
     train_mask = df.index <= df.index[split_idx]
     test_mask = df.index > df.index[split_idx]
@@ -51,7 +48,6 @@ def create_time_based_split(df, test_size=0.2):
     return train_mask, test_mask
 
 def prepare_categorical_features(selected_features):
-    """Prepare categorical features"""
     cat_features_indices = []
     cat_features_names = []
     
@@ -62,12 +58,10 @@ def prepare_categorical_features(selected_features):
             cat_features_indices.append(i)
             cat_features_names.append(col)
     
-    print(f"🏷️ Categorical features ({len(cat_features_indices)}): {cat_features_names}")
+    print(f"Categorical features ({len(cat_features_indices)}): {cat_features_names}")
     return cat_features_indices
 
 def train_model(X, y, selected_features):
-    """Train CatBoost model with class balancing"""
-    # Time-based split
     train_mask, test_mask = create_time_based_split(X)
     
     X_train = X[selected_features].loc[train_mask]
@@ -80,10 +74,8 @@ def train_model(X, y, selected_features):
     print(f"📊 Class balance in training set:")
     print(y_train.value_counts().sort_index())
     
-    # Get categorical feature indices
     cat_features_indices = prepare_categorical_features(selected_features)
     
-    # Train model WITHOUT SMOTE, using auto_class_weights only
     model = CatBoostClassifier(
         iterations=1000,
         learning_rate=0.05,
@@ -99,8 +91,7 @@ def train_model(X, y, selected_features):
         verbose=100,
         auto_class_weights='Balanced'
     )
-    
-    # Train on original data (no SMOTE)
+
     model.fit(
         X_train, y_train,
         eval_set=(X_test, y_test),
@@ -108,7 +99,6 @@ def train_model(X, y, selected_features):
         use_best_model=True
     )
     
-    # Predictions and metrics
     y_pred = model.predict(X_test)
     
     accuracy = accuracy_score(y_test, y_pred)
@@ -126,7 +116,6 @@ def train_model(X, y, selected_features):
     print("\n📊 Classification Report:")
     print(classification_report(y_test, y_pred, target_names=["DOWN", "UP"]))
     
-    # Confusion Matrix
     plt.figure(figsize=(8, 6))
     cm = confusion_matrix(y_test, y_pred)
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
@@ -138,7 +127,6 @@ def train_model(X, y, selected_features):
     plt.savefig('confusion_matrix.png', dpi=300, bbox_inches='tight')
     plt.show()
     
-    # Feature Importance
     feature_importance = model.get_feature_importance()
     feature_importance_df = pd.DataFrame({
         'feature': selected_features,

@@ -116,7 +116,6 @@ def sample_features_df():
 
 
 def test_root_endpoint(client):
-    """Test GET /"""
     response = client.get("/")
     assert response.status_code == 200
     data = response.json()
@@ -125,7 +124,6 @@ def test_root_endpoint(client):
 
 
 def test_api_endpoints_exist(client):
-    """Test that API endpoints are defined"""
     endpoints_to_check = [
         ("/", 200),
         ("/api/ohlcv/BTCUSDT", 200),
@@ -141,7 +139,6 @@ def test_api_endpoints_exist(client):
 
 
 def test_ohlcv_endpoint_structure(client):
-    """Test OHLCV endpoint response structure"""
     response = client.get("/api/ohlcv/BTCUSDT?days=90")
     assert response.status_code == 200
     
@@ -165,7 +162,6 @@ def test_ohlcv_endpoint_structure(client):
 
 
 def test_feature_importance_endpoint(client):
-    """Test feature importance endpoint"""
     response = client.get("/api/features/importance?top_n=10")
     assert response.status_code == 200
     
@@ -197,7 +193,6 @@ def test_model_metrics_endpoint(client):
 
 
 def test_prediction_endpoint(client):
-    """Test prediction endpoint"""
     response = client.get("/api/predict/current")
     assert response.status_code == 200
     
@@ -216,7 +211,6 @@ def test_prediction_endpoint(client):
 
 
 def test_technical_indicators_endpoint(client):
-    """Test technical indicators endpoint"""
     response = client.get("/api/technical/indicators?symbol=BTCUSDT&days=90")
     assert response.status_code == 200
     
@@ -236,7 +230,6 @@ def test_technical_indicators_endpoint(client):
 
 
 def test_error_handling(client):
-    """Test error handling"""
     response = client.get("/api/nonexistent")
     assert response.status_code == 404
 
@@ -285,7 +278,6 @@ def test_response_validation(client):
 
 
 def test_all_endpoints_are_tested():
-    """Meta-test to ensure we cover all endpoints"""
     endpoints_we_test = [
         "/",
         "/api/ohlcv/{symbol}",

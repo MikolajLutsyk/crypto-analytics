@@ -68,7 +68,7 @@ def fetch_klines(symbol, interval, start_date, end_date):
 
             all_data.extend(data)
             start_ts = data[-1][6] + 1  # close_time + 1 мс
-            print(f"📦 Loaded {len(data)} candles, next: {datetime.fromtimestamp(start_ts/1000)}")
+            print(f"Loaded {len(data)} candles, next: {datetime.fromtimestamp(start_ts/1000)}")
             time.sleep(0.2)  # Rate limiting
         except Exception as e:
             print(f"FAILURE -- Error fetching data: {e}")

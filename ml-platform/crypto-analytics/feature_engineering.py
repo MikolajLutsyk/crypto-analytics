@@ -24,8 +24,6 @@ def load_raw_data(symbol=SYMBOL, lookback_days=25):
     return df
 
 def add_technical_features(df):
-    """Add technical indicators to DataFrame"""
-    # Basic calculations
     df["return"] = df["close"].pct_change()
     df["log_return"] = np.log(df["close"] / df["close"].shift(1))
     df["price_range"] = (df["high"] - df["low"]) / (df["open"] + 1e-8)
