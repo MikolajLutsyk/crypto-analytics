@@ -32,12 +32,10 @@ async def get_ohlcv(symbol: str = "BTCUSDT", days: int = 90):
     try:
         df = await get_ohlcv_data(symbol, days)
         
-        # Main data
         timestamps = df['open_time'].tolist()
         prices = df['close'].tolist()
         volume = df['volume'].tolist()
         
-        # Indicators
         indicators = {
             "sma_7": df['sma_7'].fillna(0).tolist(),
             "sma_25": df['sma_25'].fillna(0).tolist(),

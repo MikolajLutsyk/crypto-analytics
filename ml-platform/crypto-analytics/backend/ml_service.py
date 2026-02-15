@@ -98,30 +98,26 @@ class MLService:
         }
     
     def predict_current(self, df):
-        """Prediction for latest available point"""
-        print(f"\n🔥 ===== PREDICT_CURRENT STARTED =====")
+        print(f"\n===== PREDICT_CURRENT STARTED =====")
         
         if self.model is None or self.features is None:
-            print("❌ Model or features not loaded")
+            print("Model or features not loaded")
             return None
         
         missing = [f for f in self.features if f not in df.columns]
         if missing:
-            print(f"❌ Features missing: {missing[:5]}...")
+            print(f"Features missing: {missing[:5]}...")
             return None
-        
         try:
             latest = df.iloc[-1]
-            
             X_latest_df = pd.DataFrame([latest[self.features]])
-            
             X_latest_df = X_latest_df.fillna(0)
             
             prediction = self.model.predict(X_latest_df)[0]
             probability = self.model.predict_proba(X_latest_df)[0]
             confidence = max(probability)
             
-            print(f"✅ Prediction: {prediction}, confidence: {confidence}")
+            print(f"Prediction: {prediction}, confidence: {confidence}")
             
             return {
                 "current_price": float(latest['close']),
@@ -130,7 +126,7 @@ class MLService:
                 "top_features": self.get_feature_importance(10)
             }
         except Exception as e:
-            print(f"🔥 Critical error in predict_current: {e}")
+            print(f"Critical error in predict_current: {e}")
             import traceback
             print(traceback.format_exc())
             return None

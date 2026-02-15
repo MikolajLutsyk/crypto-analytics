@@ -84,7 +84,6 @@ def fetch_klines(symbol, interval, start_date, end_date):
         "taker_buy_base_volume", "taker_buy_quote_volume", "ignore"
     ])
 
-    # Changing types
     df["open_time"] = pd.to_datetime(df["open_time"], unit="ms")
     df["close_time"] = pd.to_datetime(df["close_time"], unit="ms")
     numeric_cols = ["open", "high", "low", "close", "volume",
@@ -100,7 +99,6 @@ def save_to_db(df):
         print(" !!! No data to save.")
         return
     
-    # Verifying existing data
     existing_query = text("""
         SELECT MAX(open_time) as last_time FROM ohlcv WHERE symbol = :symbol
     """)
@@ -110,9 +108,8 @@ def save_to_db(df):
         last_time = result.scalar()
     
     if last_time:
-        # Filtering only new data
         df = df[df['open_time'] > last_time]
-        print(f"🔄 Found {len(df)} new records to insert")
+        print(f"Found {len(df)} new records to insert")
     
     if df.empty:
         print("!!! No new data to insert")
